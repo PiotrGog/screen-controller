@@ -18,7 +18,6 @@ pub fn active_monitors() -> Vec<String> {
     let mut lines = output.lines();
     lines.next();
     for line in lines {
-        // let line = line.trim();
         let mut line = line.split_whitespace();
         let screen = line.next_back().unwrap();
         active_monitors.push(String::from(screen));
@@ -28,13 +27,17 @@ pub fn active_monitors() -> Vec<String> {
 }
 
 pub fn set_brightness(monitor_output: &str, brightness: f32) -> bool {
-    let command = format!("./script.sh");
+    let command = format!("xrandr");
 
-    Command::new(command)
+    let child = Command::new(command)
+        .arg("--output")
         .arg(format!("{}", monitor_output))
+        .arg("--brightness")
         .arg(format!("{}", brightness))
         .spawn()
         .expect("failed to execute process");
+
+    child.wait_with_output().expect("failed to wait on child");
 
     return true;
 }
