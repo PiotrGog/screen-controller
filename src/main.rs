@@ -14,7 +14,7 @@ fn main() -> opencv::Result<()> {
 
     loop {
         let camera_brightness = camera.get_brightness()?;
-        screen.set_screens_bright(camera_brightness as f32);
+        screen.set_screens_bright(camera_brightness);
 
         thread::sleep(sleep_time);
     }

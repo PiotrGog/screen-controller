@@ -31,31 +31,31 @@ impl Brightness {
         }
     }
 
-    pub fn set_screen_bright(&mut self, screen_name: &str, new_value: f32) -> bool {
-        let brightness = new_value / self.maximum_bright as f32;
+    pub fn set_screen_bright(&mut self, screen_name: &str, new_value: u8) -> bool {
+        let brightness = new_value as f32 / self.maximum_bright as f32;
 
         if let Some(bright_value) = self.screen_brightness.get_mut(screen_name) {
             if controller::set_brightness(
                 screen_name,
                 if brightness > 1.0 { 1.0 } else { brightness },
             ) {
-                *bright_value = new_value;
+                *bright_value = brightness;
                 return true;
             };
         }
         return false;
     }
 
-    pub fn set_screens_bright(&mut self, new_value: f32) -> bool {
+    pub fn set_screens_bright(&mut self, new_value: u8) -> bool {
         let mut result = true;
-        let brightness = new_value / self.maximum_bright as f32;
+        let brightness = new_value as f32 / self.maximum_bright as f32;
 
         for (screen_name, bright_value) in &mut self.screen_brightness {
             if controller::set_brightness(
                 &screen_name,
                 if brightness > 1.0 { 1.0 } else { brightness },
             ) {
-                *bright_value = new_value;
+                *bright_value = brightness;
             } else {
                 result |= false;
             }
