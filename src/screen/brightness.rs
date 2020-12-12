@@ -24,9 +24,21 @@ impl Brightness {
         self.screen_brightness.remove(&screen_name[..]);
     }
 
+    pub fn autodetection_screens(&mut self) {
+        let active_monitors = controller::active_monitors();
+        for monitor in active_monitors {
+            self.add_screen(&monitor[..]);
+        }
+    }
+
     pub fn set_screen_bright(&mut self, screen_name: &str, new_value: f32) -> bool {
+        let brightness = new_value / self.maximum_bright as f32;
+
         if let Some(bright_value) = self.screen_brightness.get_mut(screen_name) {
-            if controller::set_brightness(screen_name, new_value / 255 as f32) {
+            if controller::set_brightness(
+                screen_name,
+                if brightness > 1.0 { 1.0 } else { brightness },
+            ) {
                 *bright_value = new_value;
                 return true;
             };
@@ -36,8 +48,13 @@ impl Brightness {
 
     pub fn set_screens_bright(&mut self, new_value: f32) -> bool {
         let mut result = true;
+        let brightness = new_value / self.maximum_bright as f32;
+
         for (screen_name, bright_value) in &mut self.screen_brightness {
-            if controller::set_brightness(&screen_name, new_value / self.maximum_bright as f32) {
+            if controller::set_brightness(
+                &screen_name,
+                if brightness > 1.0 { 1.0 } else { brightness },
+            ) {
                 *bright_value = new_value;
             } else {
                 result |= false;
