@@ -43,7 +43,13 @@ impl Brightness {
 
     pub fn set_screen_bright(&mut self, screen_name: &str, new_value: u8) -> bool {
         let brightness = new_value as f32 / self.maximum_bright as f32;
-        let brightness = if brightness > 1.0 { 1.0 } else { brightness };
+        let brightness = if brightness > 1.0 {
+            1.0
+        } else if brightness < 0.3 {
+            0.3
+        } else {
+            brightness
+        };
         if let Some(bright_value) = self.screen_brightness.get_mut(screen_name) {
             if let Some(history) = self.screen_brightness_history.get_mut(screen_name) {
                 history.push_back(brightness);
